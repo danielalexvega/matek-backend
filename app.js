@@ -5,7 +5,7 @@ const problemsRoutes = require("./routes/problems-routes");
 
 const app = express();
 
-app.use(problemsRoutes);
+app.use("/api/problems", problemsRoutes);
 
 
 app.listen(5000);
