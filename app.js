@@ -5,6 +5,8 @@ const problemsRoutes = require("./routes/problems-routes");
 
 const app = express();
 
+app.use(bodyParser.json());
+
 app.use("/api/problems", problemsRoutes);
 app.use((error, req, res, next) => {
   if (res.headerSent) {
