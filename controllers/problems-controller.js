@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require("uuid");
 const HttpError = require("../models/http-error");
 
-const DUMMY_PROBLEMS = [
+let DUMMY_PROBLEMS = [
   {
     id: "p1",
     image: "",
@@ -137,7 +137,7 @@ const getProblemsByUserId = (req, res, next) => {
     return problem.authorId === userId;
   });
 
-  if (!problems) {
+  if (!problems || problems.length === 0) {
     throw new HttpError(
       "Could not find a problem for the provided user id.",
       404
@@ -181,7 +181,48 @@ const getProblems = (req, res, next) => {
   res.json({ problems: DUMMY_PROBLEMS });
 };
 
+const updateProblem = (req, res, next) => {
+  const {
+    content,
+    katex,
+    solution,
+    isMultipleChoice,
+    choices,
+    description,
+    courses,
+  } = req.body;
+
+  const problemId = req.params.problemId;
+
+  const updatedProblem = {
+    ...DUMMY_PROBLEMS.find((problem) => problem.id === problemId),
+  };
+  const problemIndex = DUMMY_PROBLEMS.findIndex(
+    (problem) => problem.id === problemId
+  );
+  updatedProblem.subjectContent = content;
+  updatedProblem.katex = katex;
+  updatedProblem.solution = solution;
+  updatedProblem.isMultipleChoice = isMultipleChoice;
+  updatedProblem.choices = choices;
+  updatedProblem.description = description;
+  updatedProblem.courses = courses;
+
+  DUMMY_PROBLEMS[problemIndex] = updatedProblem;
+
+  res.status(200).json({ problem: updatedProblem });
+};
+
+const deleteProblem = (req, res, next) => {
+  const problemId = req.params.problemId;
+  DUMMY_PROBLEMS = DUMMY_PROBLEMS.filter((problem) => problem.id !== problemId);
+
+  res.status(200).json({ message: "Deleted a problem." });
+};
+
 exports.getProblemById = getProblemById;
 exports.getProblemsByUserId = getProblemsByUserId;
 exports.createProblem = createProblem;
 exports.getProblems = getProblems;
+exports.updateProblem = updateProblem;
+exports.deleteProblem = deleteProblem;
