@@ -1,5 +1,5 @@
 const { v4: uuidv4 } = require("uuid");
-const { validationResult } = require("express-validator")
+const { validationResult } = require("express-validator");
 
 const HttpError = require("../models/http-error");
 
@@ -151,7 +151,7 @@ const getProblemsByUserId = (req, res, next) => {
 
 const createProblem = (req, res, next) => {
   const errors = validationResult(req);
-  if(!errors.isEmpty()) {
+  if (!errors.isEmpty()) {
     throw new HttpError("Invalid inputs passed; please check your data.", 422);
   }
 
@@ -189,6 +189,11 @@ const getProblems = (req, res, next) => {
 };
 
 const updateProblem = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    throw new HttpError("Invalid inputs passed; please check your data.", 422);
+  }
+
   const {
     content,
     katex,
@@ -222,6 +227,10 @@ const updateProblem = (req, res, next) => {
 
 const deleteProblem = (req, res, next) => {
   const problemId = req.params.problemId;
+  if (!DUMMY_PROBLEMS.find((problem) => problem.id === problemId)) {
+    throw new HttpError("Could not find a problem for that id.", 404);
+  }
+  
   DUMMY_PROBLEMS = DUMMY_PROBLEMS.filter((problem) => problem.id !== problemId);
 
   res.status(200).json({ message: "Deleted a problem." });

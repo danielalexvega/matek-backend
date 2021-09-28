@@ -15,7 +15,16 @@ const router = express.Router();
 router.get("/user/:userId", getProblemsByUserId);
 
 router.get("/:problemId", getProblemById);
-router.patch("/:problemId", updateProblem);
+router.patch(
+  "/:problemId",
+  [
+    check("subjectContent").not().isEmpty(),
+    check("solution").not().isEmpty(),
+    check("katex").not().isEmpty(),
+  ],
+  updateProblem
+);
+
 router.delete("/:problemId", deleteProblem);
 
 //get all problems that are multiple choice
