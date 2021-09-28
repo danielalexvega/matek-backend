@@ -1,4 +1,5 @@
 const express = require("express");
+const { check } = require("express-validator");
 
 const {
   getProblemById,
@@ -23,8 +24,15 @@ router.delete("/:problemId", deleteProblem);
 
 //get a certain amount of problems
 
-
 router.get("/", getProblems);
-router.post("/", createProblem);
+router.post(
+  "/",
+  [
+    check("subjectContent").not().isEmpty(),
+    check("solution").not().isEmpty(),
+    check("katex").not().isEmpty(),
+  ],
+  createProblem
+);
 
 module.exports = router;
