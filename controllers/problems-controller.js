@@ -2,6 +2,7 @@ const { v4: uuidv4 } = require("uuid");
 const { validationResult } = require("express-validator");
 
 const HttpError = require("../models/http-error");
+const Problem = require("../models/problem");
 
 let DUMMY_PROBLEMS = [
   {
@@ -149,7 +150,7 @@ const getProblemsByUserId = (req, res, next) => {
   res.json({ problems });
 };
 
-const createProblem = (req, res, next) => {
+const createProblem = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     throw new HttpError("Invalid inputs passed; please check your data.", 422);
@@ -167,20 +168,26 @@ const createProblem = (req, res, next) => {
     courses,
   } = req.body;
 
-  const createdProblem = {
-    id: uuidv4(),
-    subjectContent,
+  const createdProblem = new Problem({
     katex,
     solution,
+    image: "https://images.unsplash.com/photo-1509228468518-180dd4864904?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80",
     isMultipleChoice,
     choices,
-    description,
     author,
     authorId,
-    courses,
-  };
+    subjectContent,
+    description,
+    courses
+  });
 
-  DUMMY_PROBLEMS.push(createdProblem);
+  try {
+    await createdProblem.save();
+  } catch (err) {
+    const error = new HttpError("Creating Problem failed, please try again", 500);
+    return next(error);
+  }
+
   res.status(201).json({ problem: createdProblem });
 };
 
@@ -230,7 +237,7 @@ const deleteProblem = (req, res, next) => {
   if (!DUMMY_PROBLEMS.find((problem) => problem.id === problemId)) {
     throw new HttpError("Could not find a problem for that id.", 404);
   }
-  
+
   DUMMY_PROBLEMS = DUMMY_PROBLEMS.filter((problem) => problem.id !== problemId);
 
   res.status(200).json({ message: "Deleted a problem." });
