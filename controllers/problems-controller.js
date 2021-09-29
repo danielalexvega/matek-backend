@@ -184,7 +184,8 @@ const createProblem = async (req, res, next) => {
   try {
     await createdProblem.save();
   } catch (err) {
-    const error = new HttpError("Creating Problem failed, please try again", 500);
+    console.log(err);
+    const error = new HttpError("Creating Problem failed, please try again dumb dumb", 500);
     return next(error);
   }
 
