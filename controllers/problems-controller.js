@@ -140,21 +140,33 @@ const getProblemById = async (req, res, next) => {
   res.json({ problem: problem.toObject({ getters: true }) });
 };
 
-const getProblemsByUserId = (req, res, next) => {
+const getProblemsByUserId = async (req, res, next) => {
   const userId = req.params.userId;
+  let problems;
 
-  const problems = DUMMY_PROBLEMS.filter((problem) => {
-    return problem.authorId === userId;
-  });
+  try {
+    problems = await Problem.find({ authorId: userId });
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not find a problem",
+      500
+    );
+
+    return next(error);
+  }
 
   if (!problems || problems.length === 0) {
-    throw new HttpError(
+    const error = new HttpError(
       "Could not find a problem for the provided user id.",
       404
     );
+
+    return next(error);
   }
 
-  res.json({ problems });
+  res.json({
+    problems: problems.map((problem) => problem.toObject({ getters: true })),
+  });
 };
 
 const createProblem = async (req, res, next) => {

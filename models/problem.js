@@ -8,6 +8,10 @@ const choiceSchema = new Schema({
   value: { type: String, required: true },
 });
 
+const courseSchema = new Schema({
+  value: { type: String },
+});
+
 const problemSchema = new Schema({
   katex: { type: String, required: true },
   solution: { type: String, required: true },
@@ -18,7 +22,7 @@ const problemSchema = new Schema({
   authorId: { type: String, required: true },
   subjectContent: { type: String, required: true },
   description: { type: String, required: true },
-  courses: { any: [String] },
+  courses: { type: [courseSchema] },
 });
 
 module.exports = mongoose.model("Problem", problemSchema);
