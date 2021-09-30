@@ -117,12 +117,19 @@ let DUMMY_PROBLEMS = [
   },
 ];
 
-const getProblemById = (req, res, next) => {
+const getProblemById = async (req, res, next) => {
   const problemId = req.params.problemId;
+  let problem;
+  try {
+    problem = await Problem.findById(problemId);
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not find a problem",
+      500
+    );
 
-  const problem = DUMMY_PROBLEMS.find((problem) => {
-    return problem.id === problemId;
-  });
+    return next(error);
+  }
 
   if (!problem) {
     return next(
@@ -130,7 +137,7 @@ const getProblemById = (req, res, next) => {
     );
   }
 
-  res.json({ problem });
+  res.json({ problem: problem.toObject({ getters: true }) });
 };
 
 const getProblemsByUserId = (req, res, next) => {
@@ -171,21 +178,25 @@ const createProblem = async (req, res, next) => {
   const createdProblem = new Problem({
     katex,
     solution,
-    image: "https://images.unsplash.com/photo-1509228468518-180dd4864904?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80",
+    image:
+      "https://images.unsplash.com/photo-1509228468518-180dd4864904?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80",
     isMultipleChoice,
     choices,
     author,
     authorId,
     subjectContent,
     description,
-    courses
+    courses,
   });
 
   try {
     await createdProblem.save();
   } catch (err) {
     console.log(err);
-    const error = new HttpError("Creating Problem failed, please try again dumb dumb", 500);
+    const error = new HttpError(
+      "Creating Problem failed, please try again dumb dumb",
+      500
+    );
     return next(error);
   }
 
