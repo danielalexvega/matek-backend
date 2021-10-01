@@ -219,7 +219,7 @@ const getProblems = (req, res, next) => {
   res.json({ problems: DUMMY_PROBLEMS });
 };
 
-const updateProblem = (req, res, next) => {
+const updateProblem = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     throw new HttpError("Invalid inputs passed; please check your data.", 422);
@@ -237,23 +237,36 @@ const updateProblem = (req, res, next) => {
 
   const problemId = req.params.problemId;
 
-  const updatedProblem = {
-    ...DUMMY_PROBLEMS.find((problem) => problem.id === problemId),
-  };
-  const problemIndex = DUMMY_PROBLEMS.findIndex(
-    (problem) => problem.id === problemId
-  );
-  updatedProblem.subjectContent = content;
-  updatedProblem.katex = katex;
-  updatedProblem.solution = solution;
-  updatedProblem.isMultipleChoice = isMultipleChoice;
-  updatedProblem.choices = choices;
-  updatedProblem.description = description;
-  updatedProblem.courses = courses;
+  let problem;
+  try {
+    problem = await Problem.findById(problemId);
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not update problem.",
+      500
+    );
+    return next(error);
+  }
 
-  DUMMY_PROBLEMS[problemIndex] = updatedProblem;
+  problem.subjectContent = content;
+  problem.katex = katex;
+  problem.solution = solution;
+  problem.isMultipleChoice = isMultipleChoice;
+  problem.choices = choices;
+  problem.description = description;
+  problem.courses = courses;
 
-  res.status(200).json({ problem: updatedProblem });
+  try {
+    await problem.save();
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not update problem.",
+      500
+    );
+    return next(error);
+  }
+
+  res.status(200).json({ problem: problem.toObject({ getters: true }) });
 };
 
 const deleteProblem = (req, res, next) => {
