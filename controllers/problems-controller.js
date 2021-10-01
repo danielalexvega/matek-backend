@@ -4,119 +4,6 @@ const { validationResult } = require("express-validator");
 const HttpError = require("../models/http-error");
 const Problem = require("../models/problem");
 
-let DUMMY_PROBLEMS = [
-  {
-    id: "p1",
-    image: "",
-    katex: {
-      isValid: true,
-      value: `\\begin{cases} -x -5y -5z = 2  \\\\ 4x – 5y + 4z = 19 \\\\ 
-            x + 5y - z= -20 \\end{cases}`,
-    },
-    author: "Daniel Vega",
-    authorId: "a1",
-    solution: { isValid: true, value: "(-2, -3, 3)" },
-    isMultipleChoice: { value: true, isValid: true },
-    choices: {
-      isValid: true,
-      value: [
-        {
-          id: "choiceA",
-          label: "A",
-          value: "(2, 3, -3)",
-          isValid: true,
-        },
-        {
-          id: "choiceB",
-          label: "B",
-          value: "(-2, -3, 3)",
-          isValid: true,
-        },
-        {
-          id: "choiceC",
-          label: "C",
-          value: "(3, -2, 3)",
-          isValid: true,
-        },
-      ],
-    },
-    content: "Solving the Square",
-    description: {
-      isValid: true,
-      value:
-        "This is the first problem. A system of equations problem with three variables. This problem is easiest solved with elimination.",
-    },
-    courses: ["Algebra 2"],
-  },
-  {
-    id: "p2",
-    image: "",
-    katex: {
-      isValid: true,
-      value: `\\begin{cases} -x -5y -5z = 2  \\\\ 4x – 5y + 4z = 19 \\\\ 
-            x + 5y - z= -20 \\end{cases}`,
-    },
-    author: "Daniel Vega",
-    authorId: "a2",
-    solution: { isValid: true, value: "(-2, -3, 3)" },
-    isMultipleChoice: { value: true, isValid: true },
-    choices: {
-      isValid: true,
-      value: [
-        {
-          id: "choiceA",
-          label: "A",
-          value: "(2, 3, -3)",
-          isValid: true,
-        },
-        {
-          id: "choiceB",
-          label: "B",
-          value: "(-2, -3, 3)",
-          isValid: true,
-        },
-        {
-          id: "choiceC",
-          label: "C",
-          value: "(3, -2, 3)",
-          isValid: true,
-        },
-      ],
-    },
-    content: "Solving the Square",
-    description: {
-      isValid: true,
-      value:
-        "A system of equations problem with three variables. This problem is easiest solved with elimination.",
-    },
-    courses: ["Algebra 2"],
-  },
-  {
-    id: "p3",
-    image: "",
-    katex: {
-      isValid: true,
-      value: `\\begin{cases} -x -5y + z = 17  \\\\ -5x – 5y + 5z = 5 \\\\ 
-              2x + 5y - 3z= -10 \\end{cases}`,
-    },
-    author: "Daniel Vega",
-    authorId: "a2",
-    solution: { isValid: true, value: "(-1, -4, -4)" },
-    isMultipleChoice: { value: null, isValid: true },
-    choices: {
-      isValid: true,
-      value: [],
-    },
-    content: "Solving the Square",
-    description: {
-      isValid: true,
-      value:
-        "This is the third Problem. A system of equations problem with three variables. This problem is easiest solved with elimination.",
-    },
-    courses: ["Algebra 2"],
-  },
-];
-
 const getProblemById = async (req, res, next) => {
   const problemId = req.params.problemId;
   let problem;
@@ -169,6 +56,25 @@ const getProblemsByUserId = async (req, res, next) => {
   });
 };
 
+const getProblems = (req, res, next) => {
+  let problems;
+
+  try {
+    problems = await Problem.find();
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not find a problem",
+      500
+    );
+
+    return next(error);
+  }
+
+  res.json({
+    problems: problems.map((problem) => problem.toObject({ getters: true })),
+  });
+};
+
 const createProblem = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -211,12 +117,8 @@ const createProblem = async (req, res, next) => {
     );
     return next(error);
   }
-
+  
   res.status(201).json({ problem: createdProblem });
-};
-
-const getProblems = (req, res, next) => {
-  res.json({ problems: DUMMY_PROBLEMS });
 };
 
 const updateProblem = async (req, res, next) => {
@@ -269,20 +171,29 @@ const updateProblem = async (req, res, next) => {
   res.status(200).json({ problem: problem.toObject({ getters: true }) });
 };
 
-const deleteProblem = (req, res, next) => {
+const deleteProblem = async (req, res, next) => {
   const problemId = req.params.problemId;
-  if (!DUMMY_PROBLEMS.find((problem) => problem.id === problemId)) {
-    throw new HttpError("Could not find a problem for that id.", 404);
+  let problem;
+  try {
+    problem = await Problem.findById(problemId);
+  } catch (err) {
+    const error = new HttpError("Something went wrong. Could not delete problem", 500);
+    return next(error);
   }
 
-  DUMMY_PROBLEMS = DUMMY_PROBLEMS.filter((problem) => problem.id !== problemId);
+  try {
+    await problem.remove();
+  } catch (err) {
+    const error = new HttpError("Something went wrong. Could not delete problem", 500);
+    return next(error);
+  }
 
   res.status(200).json({ message: "Deleted a problem." });
 };
 
 exports.getProblemById = getProblemById;
 exports.getProblemsByUserId = getProblemsByUserId;
-exports.createProblem = createProblem;
 exports.getProblems = getProblems;
+exports.createProblem = createProblem;
 exports.updateProblem = updateProblem;
 exports.deleteProblem = deleteProblem;
