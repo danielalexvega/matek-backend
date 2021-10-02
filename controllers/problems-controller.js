@@ -56,7 +56,7 @@ const getProblemsByUserId = async (req, res, next) => {
   });
 };
 
-const getProblems = (req, res, next) => {
+const getProblems = async (req, res, next) => {
   let problems;
 
   try {

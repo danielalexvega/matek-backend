@@ -13,21 +13,30 @@ const DUMMY_USERS = [
   },
 ];
 
-const getUsers = (req, res, next) => {
-  res.json({ users: DUMMY_USERS });
+const getUsers = async (req, res, next) => {
+  let users;
+  try {
+    users = await User.find({}, "-password");
+  } catch (err) {
+    const error = new HttpError("Fecthing users failed. Please try agai", 500);
+    return next(error);
+  }
+  res.json({ users: users.map((user) => user.toObject({ getters: true })) });
 };
 
 const signup = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    throw new HttpError("Invalid inputs passed; please check your data.", 422);
+    return next(
+      new HttpError("Invalid inputs passed; please check your data.", 422)
+    );
   }
 
-  const { name, email, password } = req.body;
+  const { name, email, password, problems } = req.body;
 
   let existingUser;
   try {
-    existingUser = await user.findOne({ email: email });
+    existingUser = await User.findOne({ email: email });
   } catch (err) {
     const error = new HttpError(
       "Signing up failed. Please try again later",
@@ -56,25 +65,34 @@ const signup = async (req, res, next) => {
   try {
     await createdUser.save();
   } catch (err) {
-    const error = new HttpError(
-      "Signing up failed, please try again.",
-      500
-    );
+    const error = new HttpError("Signing up failed, please try again.", 500);
     return next(error);
   }
 
   res.status(201).json({ user: createdUser.toObject({ getters: true }) });
 };
 
-const login = (req, res, next) => {
+const login = async (req, res, next) => {
   const { email, password } = req.body;
 
-  const identifiedUser = DUMMY_USERS.find((user) => user.email === email);
-  if (!identifiedUser || identifiedUser.password !== password) {
-    throw new HttpError(
-      "Could not identified user, please check credentials.",
+  let existingUser;
+
+  try {
+    existingUser = await User.findOne({ email: email });
+  } catch (err) {
+    const error = new HttpError(
+      "Logging in has failed. Please try again later",
+      500
+    );
+    return next(error);
+  }
+
+  if (!existingUser || existingUser.password !== password) {
+    const error = new HttpError(
+      "Invalid credentials, could not log you in.",
       401
     );
+    return next(error);
   }
 
   res.json({ message: "You are now logged in." });
