@@ -15,7 +15,7 @@ const courseSchema = new Schema({
 const problemSchema = new Schema({
   katex: { type: String, required: true },
   solution: { type: String, required: true },
-  image: { type: String, required: true },
+  image: { type: String },
   isMultipleChoice: { type: Boolean, required: true },
   choices: { type: [choiceSchema] },
   author: { type: String, required: true },
