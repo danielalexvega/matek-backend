@@ -19,7 +19,7 @@ const problemSchema = new Schema({
   isMultipleChoice: { type: Boolean, required: true },
   choices: { type: [choiceSchema] },
   author: { type: String, required: true },
-  authorId: { type: String, required: true },
+  authorId: { type: mongoose.Types.ObjectId, required: true, ref: "User" },
   subjectContent: { type: String, required: true },
   description: { type: String, required: true },
   courses: { type: [courseSchema] },

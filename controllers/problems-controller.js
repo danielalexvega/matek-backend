@@ -1,7 +1,9 @@
 const { v4: uuidv4 } = require("uuid");
 const { validationResult } = require("express-validator");
+const mongoose = require("mongoose");
 
 const HttpError = require("../models/http-error");
+const User = require("../models/user");
 const Problem = require("../models/problem");
 
 const getProblemById = async (req, res, next) => {
@@ -107,16 +109,37 @@ const createProblem = async (req, res, next) => {
     courses,
   });
 
+  let user;
   try {
-    await createdProblem.save();
+    user = await User.findById(authorId);
   } catch (err) {
     const error = new HttpError(
-      "Creating Problem failed, please try again dumb dumb",
+      "Creating problem failed, please try again",
       500
     );
     return next(error);
   }
-  
+
+  if (!user) {
+    const error = new HttpError("We could not find user for provided id", 404);
+    return next(error);
+  }
+
+  try {
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    await createdProblem.save({ session: sess });
+    user.problems.push(createdProblem);
+    await user.save({ session: sess });
+    await sess.commitTransaction();
+  } catch (err) {
+    const error = new HttpError(
+      "Creating Problem failed, please try again.",
+      500
+    );
+    return next(error);
+  }
+
   res.status(201).json({ problem: createdProblem });
 };
 
@@ -176,14 +199,20 @@ const deleteProblem = async (req, res, next) => {
   try {
     problem = await Problem.findById(problemId);
   } catch (err) {
-    const error = new HttpError("Something went wrong. Could not delete problem", 500);
+    const error = new HttpError(
+      "Something went wrong. Could not delete problem",
+      500
+    );
     return next(error);
   }
 
   try {
     await problem.remove();
   } catch (err) {
-    const error = new HttpError("Something went wrong. Could not delete problem", 500);
+    const error = new HttpError(
+      "Something went wrong. Could not delete problem",
+      500
+    );
     return next(error);
   }
 

@@ -32,7 +32,7 @@ const signup = async (req, res, next) => {
     );
   }
 
-  const { name, email, password, problems } = req.body;
+  const { name, email, password } = req.body;
 
   let existingUser;
   try {
@@ -59,7 +59,7 @@ const signup = async (req, res, next) => {
     password,
     image:
       "https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=687&q=80",
-    problems,
+    problems: [],
   });
 
   try {
