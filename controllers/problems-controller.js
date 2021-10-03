@@ -197,7 +197,7 @@ const deleteProblem = async (req, res, next) => {
   const problemId = req.params.problemId;
   let problem;
   try {
-    problem = await Problem.findById(problemId);
+    problem = await Problem.findById(problemId).populate("authorId");
   } catch (err) {
     const error = new HttpError(
       "Something went wrong. Could not delete problem",
@@ -206,8 +206,21 @@ const deleteProblem = async (req, res, next) => {
     return next(error);
   }
 
+  if (!problem) {
+    const error = new HttpError(
+      "Could not find the problem for the given id.",
+      404
+    );
+    return next(error);
+  }
+
   try {
-    await problem.remove();
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    await problem.remove({ session: sess });
+    problem.authorId.problems.pull(problem);
+    await problem.authorId.save({ session: sess });
+    await sess.commitTransaction();
   } catch (err) {
     const error = new HttpError(
       "Something went wrong. Could not delete problem",
