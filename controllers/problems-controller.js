@@ -114,7 +114,7 @@ const createProblem = async (req, res, next) => {
     user = await User.findById(authorId);
   } catch (err) {
     const error = new HttpError(
-      "Creating problem failed, please try again",
+      "Creating problem failed, please try again.",
       500
     );
     return next(error);
@@ -133,8 +133,9 @@ const createProblem = async (req, res, next) => {
     await user.save({ session: sess });
     await sess.commitTransaction();
   } catch (err) {
+    console.log(err.message);
     const error = new HttpError(
-      "Creating Problem failed, please try again.",
+      "Creating Problem failed, please try again. And it was here.",
       500
     );
     return next(error);

@@ -6,6 +6,7 @@ const { getUsers, signup, login } = require("../controllers/users-controller");
 const router = express.Router();
 
 router.get("/", getUsers);
+
 router.post(
   "/signup",
   [
