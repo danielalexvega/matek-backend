@@ -54,7 +54,7 @@ const getProblemsByUserId = async (req, res, next) => {
   }
 
   res.json({
-    problems: problems.map((problem) => problem.toObject({ getters: true })),
+    problems: problems.map((problem) => problem.toObject({ getters: true }))
   });
 };
 
