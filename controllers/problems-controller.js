@@ -44,7 +44,7 @@ const getProblemsByUserId = async (req, res, next) => {
     return next(error);
   }
 
-  if (!problems || problems.length === 0) {
+  if (!problems) {
     const error = new HttpError(
       "Could not find a problem for the provided user id.",
       404
