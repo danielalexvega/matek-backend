@@ -151,7 +151,7 @@ const updateProblem = async (req, res, next) => {
   }
 
   const {
-    content,
+    subjectContent,
     katex,
     solution,
     isMultipleChoice,
@@ -173,7 +173,7 @@ const updateProblem = async (req, res, next) => {
     return next(error);
   }
 
-  problem.subjectContent = content;
+  problem.subjectContent = subjectContent;
   problem.katex = katex;
   problem.solution = solution;
   problem.isMultipleChoice = isMultipleChoice;
