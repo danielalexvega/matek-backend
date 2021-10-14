@@ -96,19 +96,36 @@ const createProblem = async (req, res, next) => {
     hasImage
   } = req.body;
 
-  const createdProblem = new Problem({
-    katex,
-    solution,
-    image: req.file.path,
-    isMultipleChoice,
-    choices,
-    author,
-    authorId,
-    subjectContent,
-    description,
-    courses,
-    hasImage
-  });
+  let createdProblem;
+
+  if(hasImage) {
+    createdProblem = new Problem({
+      katex,
+      solution,
+      image: req.file.path,
+      isMultipleChoice,
+      choices,
+      author,
+      authorId,
+      subjectContent,
+      description,
+      courses,
+      hasImage
+    });
+  } else {
+    createdProblem = new Problem({
+      katex,
+      solution,
+      isMultipleChoice,
+      choices,
+      author,
+      authorId,
+      subjectContent,
+      description,
+      courses,
+      hasImage
+    });
+  }
 
   let user;
   try {
