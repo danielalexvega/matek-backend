@@ -9,6 +9,7 @@ const {
   updateProblem,
   deleteProblem,
 } = require("../controllers/problems-controller");
+const fileUpload = require("../middleware/file-upload");
 
 const router = express.Router();
 
@@ -24,6 +25,7 @@ router.get("/:problemId", getProblemById);
 // create a problem
 router.post(
   "/",
+  fileUpload.single("image"),
   [
     check("subjectContent").not().isEmpty(),
     check("solution").not().isEmpty(),

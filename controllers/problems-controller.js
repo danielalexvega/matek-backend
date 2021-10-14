@@ -93,13 +93,13 @@ const createProblem = async (req, res, next) => {
     author,
     authorId,
     courses,
+    hasImage
   } = req.body;
 
   const createdProblem = new Problem({
     katex,
     solution,
-    image:
-      "https://images.unsplash.com/photo-1509228468518-180dd4864904?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80",
+    image: req.file.path,
     isMultipleChoice,
     choices,
     author,
@@ -107,6 +107,7 @@ const createProblem = async (req, res, next) => {
     subjectContent,
     description,
     courses,
+    hasImage
   });
 
   let user;

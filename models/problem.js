@@ -23,6 +23,7 @@ const problemSchema = new Schema({
   subjectContent: { type: String, required: true },
   description: { type: String, required: true },
   courses: { type: [courseSchema] },
+  hasImage: { type: Boolean, required: true },
 });
 
 module.exports = mongoose.model("Problem", problemSchema);
