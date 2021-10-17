@@ -1,4 +1,6 @@
 // const { v4: uuidv4 } = require("uuid");
+
+const fs = require("fs");
 const { validationResult } = require("express-validator");
 const mongoose = require("mongoose");
 
@@ -54,7 +56,7 @@ const getProblemsByUserId = async (req, res, next) => {
   }
 
   res.json({
-    problems: problems.map((problem) => problem.toObject({ getters: true }))
+    problems: problems.map((problem) => problem.toObject({ getters: true })),
   });
 };
 
@@ -93,12 +95,12 @@ const createProblem = async (req, res, next) => {
     author,
     authorId,
     courses,
-    hasImage
+    hasImage,
   } = req.body;
 
   let createdProblem;
 
-  if(hasImage) {
+  if (hasImage) {
     createdProblem = new Problem({
       katex,
       solution,
@@ -110,7 +112,7 @@ const createProblem = async (req, res, next) => {
       subjectContent,
       description,
       courses,
-      hasImage
+      hasImage,
     });
   } else {
     createdProblem = new Problem({
@@ -123,7 +125,7 @@ const createProblem = async (req, res, next) => {
       subjectContent,
       description,
       courses,
-      hasImage
+      hasImage,
     });
   }
 
@@ -233,6 +235,8 @@ const deleteProblem = async (req, res, next) => {
     return next(error);
   }
 
+  const imagePath = problem.image;
+
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
@@ -247,6 +251,10 @@ const deleteProblem = async (req, res, next) => {
     );
     return next(error);
   }
+
+  fs.unlink(imagePath, (err) => {
+    console.log(err);
+  });
 
   res.status(200).json({ message: "Deleted a problem." });
 };
