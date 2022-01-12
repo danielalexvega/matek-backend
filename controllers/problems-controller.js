@@ -98,6 +98,9 @@ const createProblem = async (req, res, next) => {
     hasImage,
   } = req.body;
 
+  let courseArray = [courses];
+  let choicesArray = [choices];
+
   let createdProblem;
 
   if (hasImage) {
@@ -106,12 +109,12 @@ const createProblem = async (req, res, next) => {
       solution,
       image: req.file.path,
       isMultipleChoice,
-      choices,
+      choicesArray,
       author,
       authorId,
       subjectContent,
       description,
-      courses,
+      courseArray,
       hasImage,
     });
   } else {
@@ -155,7 +158,7 @@ const createProblem = async (req, res, next) => {
   } catch (err) {
     console.log(err.message);
     const error = new HttpError(
-      "Creating Problem failed, please try again. And it was here.",
+      "Creating Problem failed, please try again. And it was here bubba.",
       500
     );
     return next(error);
