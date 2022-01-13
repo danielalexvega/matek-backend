@@ -49,7 +49,7 @@ app.use((error, req, res, next) => {
 
 mongoose
   .connect(
-    `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@matek.bpmz7.mongodb.net/matek?retryWrites=true&w=majority`
+    `${DB_URI}`
   )
   .then(() => {
     app.listen(5000);
