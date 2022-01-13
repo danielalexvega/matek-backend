@@ -8,6 +8,7 @@ const mongoose = require("mongoose");
 const problemsRoutes = require("./routes/problems-routes");
 const userRoutes = require("./routes/users-routes");
 const HttpError = require("./models/http-error");
+require('dotenv').config();
 
 const app = express();
 
@@ -48,7 +49,7 @@ app.use((error, req, res, next) => {
 
 mongoose
   .connect(
-    "mongodb+srv://matek-daniel:BACK2back95center@matek.bpmz7.mongodb.net/matek?retryWrites=true&w=majority"
+    `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@matek.bpmz7.mongodb.net/matek?retryWrites=true&w=majority`
   )
   .then(() => {
     app.listen(5000);
