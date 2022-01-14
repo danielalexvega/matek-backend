@@ -2,14 +2,15 @@ const express = require("express");
 const { check } = require("express-validator");
 
 const {
-  getProblemById,
-  getProblemsByUserId,
-  createProblem,
-  getProblems,
-  updateProblem,
-  deleteProblem,
+    getProblemById,
+    getProblemsByUserId,
+    createProblem,
+    getProblems,
+    updateProblem,
+    deleteProblem,
 } = require("../controllers/problems-controller");
 const fileUpload = require("../middleware/file-upload");
+const checkAuth = require("../middleware/check-auth");
 
 const router = express.Router();
 
@@ -22,27 +23,29 @@ router.get("/user/:userId", getProblemsByUserId);
 // get a single problem
 router.get("/:problemId", getProblemById);
 
+router.use(checkAuth);
+
 // create a problem
 router.post(
-  "/",
-  fileUpload.single("image"),
-  [
-    check("subjectContent").not().isEmpty(),
-    check("solution").not().isEmpty(),
-    check("katex").not().isEmpty(),
-  ],
-  createProblem
+    "/",
+    fileUpload.single("image"),
+    [
+        check("subjectContent").not().isEmpty(),
+        check("solution").not().isEmpty(),
+        check("katex").not().isEmpty(),
+    ],
+    createProblem
 );
 
 // update a problem
 router.patch(
-  "/:problemId",
-  [
-    check("subjectContent").not().isEmpty(),
-    check("solution").not().isEmpty(),
-    check("katex").not().isEmpty(),
-  ],
-  updateProblem
+    "/:problemId",
+    [
+        check("subjectContent").not().isEmpty(),
+        check("solution").not().isEmpty(),
+        check("katex").not().isEmpty(),
+    ],
+    updateProblem
 );
 
 //delete a problem
