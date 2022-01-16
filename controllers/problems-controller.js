@@ -196,6 +196,14 @@ const updateProblem = async (req, res, next) => {
     return next(error);
   }
 
+  if(problem.authorId.toString() !== req.userData.userId) {
+    const error = new HttpError(
+        "You are not allowed to edit this problem.",
+        401
+      );
+      return next(error);
+  }
+
   problem.subjectContent = subjectContent;
   problem.katex = katex;
   problem.solution = solution;
@@ -236,6 +244,14 @@ const deleteProblem = async (req, res, next) => {
       404
     );
     return next(error);
+  }
+
+  if(problem.authorId.id !== req.userData.userId) {
+    const error = new HttpError(
+        "You are not allowed to delete this problem.",
+        401
+      );
+      return next(error);
   }
 
   const imagePath = problem.image;

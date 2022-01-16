@@ -104,7 +104,7 @@ const login = async (req, res, next) => {
         existingUser = await User.findOne({ email: email });
     } catch (err) {
         const error = new HttpError(
-            "Logging in has failed. Please try again later",
+            "Logging in has failed. Please try again later.",
             500
         );
         return next(error);
@@ -140,7 +140,7 @@ const login = async (req, res, next) => {
     let token;
     try {
         token = jwt.sign(
-            { userId: createdUser.id, email: email },
+            { userId: existingUser.id, email: email },
             process.env.JWT_KEY,
             { expiresIn: "1h" }
         );

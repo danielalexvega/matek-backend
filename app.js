@@ -49,7 +49,7 @@ app.use((error, req, res, next) => {
 
 mongoose
   .connect(
-    `${DB_URI}`
+    `${process.env.DB_URI}`
   )
   .then(() => {
     app.listen(5000);
