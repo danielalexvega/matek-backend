@@ -80,7 +80,7 @@ const signup = async (req, res, next) => {
     let token;
     try {
         token = jwt.sign(
-            { userId: createdUser.id, email: email },
+            { userId: createdUser.id, email: createdUser.email },
             process.env.JWT_KEY,
             { expiresIn: "1h" }
         );
@@ -132,7 +132,7 @@ const login = async (req, res, next) => {
     if (!isValidPassword) {
         const error = new HttpError(
             "Invalid credentials, could not log you in.",
-            401
+            403
         );
         return next(error);
     }
@@ -154,6 +154,7 @@ const login = async (req, res, next) => {
 
     res.json({
         message: "You are now logged in.",
+        name: existingUser.name,
         userId: existingUser.id, 
         email: existingUser.email, 
         token: token 
