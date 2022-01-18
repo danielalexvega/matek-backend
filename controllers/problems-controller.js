@@ -15,7 +15,7 @@ const getProblemById = async (req, res, next) => {
     problem = await Problem.findById(problemId);
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not find a problem",
+      "Something went wrong, could not find a problem.",
       500
     );
 
@@ -67,10 +67,9 @@ const getProblems = async (req, res, next) => {
     problems = await Problem.find();
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not find a problem",
+      "Something went wrong, could not find any problems.",
       500
     );
-
     return next(error);
   }
 
@@ -93,7 +92,6 @@ const createProblem = async (req, res, next) => {
     choices,
     description,
     author,
-    authorId,
     courses,
     hasImage,
   } = req.body;
@@ -111,7 +109,7 @@ const createProblem = async (req, res, next) => {
       isMultipleChoice,
       choicesArray,
       author,
-      authorId,
+      authorId: req.userData.userId,
       subjectContent,
       description,
       courseArray,
@@ -124,7 +122,7 @@ const createProblem = async (req, res, next) => {
       isMultipleChoice,
       choices,
       author,
-      authorId,
+      authorId: req.userData.userId,
       subjectContent,
       description,
       courses,
@@ -134,7 +132,7 @@ const createProblem = async (req, res, next) => {
 
   let user;
   try {
-    user = await User.findById(authorId);
+    user = await User.findById(req.userData.userId);
   } catch (err) {
     const error = new HttpError(
       "Creating problem failed, please try again.",
