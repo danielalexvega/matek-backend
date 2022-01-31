@@ -5,6 +5,8 @@ const jwt = require("jsonwebtoken");
 const HttpError = require("../models/http-error");
 const User = require("../models/user");
 
+const { uploadFile } = require("../s3");
+
 const getUsers = async (req, res, next) => {
     let users;
     try {
@@ -59,6 +61,19 @@ const signup = async (req, res, next) => {
         return next(error);
     }
 
+    let profileImageResult;
+    const file = req.file;
+
+    try {
+        profileImageResult = await uploadFile(file);
+    } catch (err) {
+        const error = new HttpError(
+            "Could not save profile image, please try again", 
+            500
+        )
+        return next(error);
+    }
+
     const createdUser = new User({
         name,
         email,
@@ -92,7 +107,12 @@ const signup = async (req, res, next) => {
         return next(error);
     }
 
-    res.status(201).json({ userId: createdUser.id, email: createdUser.email, userName: name, token: token });
+    res.status(201).json({
+        userId: createdUser.id,
+        email: createdUser.email,
+        userName: name,
+        token: token,
+    });
 };
 
 const login = async (req, res, next) => {
@@ -157,9 +177,9 @@ const login = async (req, res, next) => {
     res.json({
         message: "You are now logged in.",
         name: existingUser.name,
-        userId: existingUser.id, 
-        email: existingUser.email, 
-        token: token 
+        userId: existingUser.id,
+        email: existingUser.email,
+        token: token,
     });
 };
 
