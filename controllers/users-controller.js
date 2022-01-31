@@ -78,7 +78,7 @@ const signup = async (req, res, next) => {
         name,
         email,
         password: hashedPassword,
-        image: req.file.path,
+        image: profileImageResult.Key,
         problems: [],
     });
 

@@ -10,13 +10,21 @@ const userRoutes = require("./routes/users-routes");
 const courseRoutes = require("./routes/courses-routes");
 const contentDomainRoutes = require("./routes/content-domain-routes");
 const HttpError = require("./models/http-error");
+const { getFileStream } = require("./s3");
 require("dotenv").config();
 
 const app = express();
 
 app.use(bodyParser.json());
 
-app.use("/uploads/images", express.static(path.join("uploads", "images")));
+// app.use("/uploads/images", express.static(path.join("uploads", "images")));
+
+app.get("/images/:key", (req, res) => {
+    const key = req.params.key;
+    const readStream = getFileStream(key);
+
+    readStream.pipe(res);
+});
 
 app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
