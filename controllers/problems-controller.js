@@ -91,17 +91,17 @@ const createProblem = async (req, res, next) => {
 
     const {
         subjectContent,
+        course, 
+        subdomain,
         katex,
         solution,
         isMultipleChoice,
         choices,
         description,
         author,
-        courses,
         hasImage,
     } = req.body;
 
-    let courseArray = [courses];
     let choicesArray = [choices];
 
     let createdProblem;
@@ -116,8 +116,9 @@ const createProblem = async (req, res, next) => {
             author,
             authorId: req.userData.userId,
             subjectContent,
+            subdomain,
             description,
-            courseArray,
+            course,
             hasImage,
         });
     } else {
@@ -125,12 +126,13 @@ const createProblem = async (req, res, next) => {
             katex,
             solution,
             isMultipleChoice,
-            choices,
+            choicesArray,
             author,
             authorId: req.userData.userId,
             subjectContent,
+            subdomain,
             description,
-            courses,
+            course,
             hasImage,
         });
     }
