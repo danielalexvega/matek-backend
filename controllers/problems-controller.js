@@ -265,7 +265,10 @@ const deleteProblem = async (req, res, next) => {
         return next(error);
     }
 
-    const imagePath = problem.image;
+    let imagePath;
+    if(problem.image) {
+        imagePath = problem.image;
+    }
 
     try {
         const sess = await mongoose.startSession();
@@ -282,9 +285,11 @@ const deleteProblem = async (req, res, next) => {
         return next(error);
     }
 
-    fs.unlink(imagePath, (err) => {
-        console.log(err);
-    });
+    if(problem.image) {
+        fs.unlink(imagePath, (err) => {
+            console.log(err);
+        });
+    }
 
     res.status(200).json({ message: "Deleted a problem." });
 };
