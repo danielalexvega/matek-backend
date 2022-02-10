@@ -23,6 +23,10 @@ router.get("/user/:userId", getProblemsByUserId);
 // get a single problem
 router.get("/:problemId", getProblemById);
 
+// clone a problem ??
+
+router.get("/:problemId/clone", getProblemById);
+
 router.use(checkAuth);
 
 // create a problem
