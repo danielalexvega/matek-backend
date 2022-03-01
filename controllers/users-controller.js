@@ -21,6 +21,10 @@ const getUsers = async (req, res, next) => {
     res.json({ users: users.map((user) => user.toObject({ getters: true })) });
 };
 
+const getUser = async (req, res, next) => {
+    let user;
+}
+
 const signup = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -112,6 +116,7 @@ const signup = async (req, res, next) => {
         email: createdUser.email,
         userName: name,
         token: token,
+        image: createdUser.image
     });
 };
 
@@ -180,6 +185,7 @@ const login = async (req, res, next) => {
         userId: existingUser.id,
         email: existingUser.email,
         token: token,
+        image: existingUser.image
     });
 };
 
