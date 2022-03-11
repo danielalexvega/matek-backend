@@ -94,6 +94,7 @@ const createProblem = async (req, res, next) => {
         course, 
         subdomain,
         katex,
+        katexEquation,
         solution,
         isMultipleChoice,
         choices,
@@ -109,6 +110,7 @@ const createProblem = async (req, res, next) => {
     if (hasImage) {
         createdProblem = new Problem({
             katex,
+            katexEquation,
             solution,
             image: req.file.path,
             isMultipleChoice,
@@ -124,6 +126,7 @@ const createProblem = async (req, res, next) => {
     } else {
         createdProblem = new Problem({
             katex,
+            katexEquation,
             solution,
             isMultipleChoice,
             choicesArray,
