@@ -13,7 +13,7 @@ const getUsers = async (req, res, next) => {
         users = await User.find({}, "-password");
     } catch (err) {
         const error = new HttpError(
-            "Fecthing users failed. Please try agai",
+            "Fecthing users failed. Please try again",
             500
         );
         return next(error);
@@ -22,8 +22,21 @@ const getUsers = async (req, res, next) => {
 };
 
 const getUser = async (req, res, next) => {
+    const userId = req.params.userId;
     let user;
-}
+
+    try {
+        user = await User.findOne({ id: userId }, "-password");
+    } catch (err) {
+        const error = new HttpError(
+            "Fetching user failed. Please try again.",
+            500
+        );
+        return next(error);
+    }
+
+    res.json({ user: user.toObject({ getters: true }) });
+};
 
 const signup = async (req, res, next) => {
     const errors = validationResult(req);
@@ -72,9 +85,9 @@ const signup = async (req, res, next) => {
         profileImageResult = await uploadFile(file);
     } catch (err) {
         const error = new HttpError(
-            "Could not save profile image, please try again", 
+            "Could not save profile image, please try again",
             500
-        )
+        );
         return next(error);
     }
 
@@ -116,7 +129,7 @@ const signup = async (req, res, next) => {
         email: createdUser.email,
         userName: name,
         token: token,
-        image: createdUser.image
+        image: createdUser.image,
     });
 };
 
@@ -134,8 +147,6 @@ const login = async (req, res, next) => {
         );
         return next(error);
     }
-
-    console.log("You got this far.");
 
     if (!existingUser) {
         const error = new HttpError(
@@ -185,10 +196,11 @@ const login = async (req, res, next) => {
         userId: existingUser.id,
         email: existingUser.email,
         token: token,
-        image: existingUser.image
+        image: existingUser.image,
     });
 };
 
 exports.getUsers = getUsers;
+exports.getUser = getUser;
 exports.signup = signup;
 exports.login = login;
