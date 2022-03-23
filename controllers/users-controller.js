@@ -26,7 +26,7 @@ const getUser = async (req, res, next) => {
     let user;
 
     try {
-        user = await User.findOne({ id: userId }, "-password");
+        user = await User.findById(userId, "-password");
     } catch (err) {
         const error = new HttpError(
             "Fetching user failed. Please try again.",
