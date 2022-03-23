@@ -9,6 +9,8 @@ const userSchema = new Schema({
   password: { type: String, required: true, minlength: 8 }, //check for password
   image: { type: String },
   problems: [{ type: mongoose.Types.ObjectId, required: true, ref: "Problem"}],
+  school: { type: String, required: true},
+  schoolDistrict: { type: String, required: true},
 });
 
 userSchema.plugin(uniqueValidator);

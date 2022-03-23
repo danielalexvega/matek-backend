@@ -46,7 +46,7 @@ const signup = async (req, res, next) => {
         );
     }
 
-    const { name, email, password } = req.body;
+    const { name, email, password, school, schoolDistrict } = req.body;
 
     let existingUser;
     try {
@@ -97,6 +97,8 @@ const signup = async (req, res, next) => {
         password: hashedPassword,
         image: profileImageResult.Key,
         problems: [],
+        school,
+        schoolDistrict,
     });
 
     try {
