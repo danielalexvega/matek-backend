@@ -188,13 +188,15 @@ const updateProblem = async (req, res, next) => {
     }
 
     const {
-        subjectContent,
         katex,
+        katexEquation,
         solution,
         isMultipleChoice,
         choices,
+        subjectContent,
+        subdomain,
         description,
-        courses,
+        course,
     } = req.body;
 
     const problemId = req.params.problemId;
@@ -218,13 +220,15 @@ const updateProblem = async (req, res, next) => {
         return next(error);
     }
 
+    problem.course = course;
+    problem.subdomain = subdomain;
     problem.subjectContent = subjectContent;
     problem.katex = katex;
+    problem.katexEquation = katexEquation;
     problem.solution = solution;
     problem.isMultipleChoice = isMultipleChoice;
     problem.choices = choices;
     problem.description = description;
-    problem.courses = courses;
 
     try {
         await problem.save();
