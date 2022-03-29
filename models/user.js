@@ -11,6 +11,8 @@ const userSchema = new Schema({
   problems: [{ type: mongoose.Types.ObjectId, required: true, ref: "Problem"}],
   school: { type: String, required: true},
   schoolDistrict: { type: String, required: true},
+  city: {type: String, required: false},
+  state: {type: String, required: false},
 });
 
 userSchema.plugin(uniqueValidator);
