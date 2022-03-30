@@ -8,6 +8,7 @@ const {
     getProblems,
     updateProblem,
     deleteProblem,
+    getLastSixProblemsByUserId,
 } = require("../controllers/problems-controller");
 const fileUpload = require("../middleware/file-upload");
 const checkAuth = require("../middleware/check-auth");
@@ -19,6 +20,9 @@ router.get("/", getProblems);
 
 // get all problems with a userId
 router.get("/user/:userId", getProblemsByUserId);
+
+// get last 6 problems from a user
+router.get("/user/lastSix/:userId", getLastSixProblemsByUserId);
 
 // get a single problem
 router.get("/:problemId", getProblemById);

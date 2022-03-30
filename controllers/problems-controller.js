@@ -60,6 +60,39 @@ const getProblemsByUserId = async (req, res, next) => {
     });
 };
 
+const getLastSixProblemsByUserId = async (req, res, next) => {
+    const userId = req.params.userId;
+    let problems;
+
+    try {
+        problems = await Problem.find({ authorId: userId })
+            .sort("-date")
+            .limit(6);
+    } catch (err) {
+        const error = new HttpError(
+            "Something went wrong, could not find a problem",
+            500
+        );
+
+        return next(error);
+    }
+
+    if (!problems) {
+        const error = new HttpError(
+            "Could not find a problem for the provided user id.",
+            404
+        );
+
+        return next(error);
+    }
+
+    res.json({
+        problems: problems.map((problem) =>
+            problem.toObject({ getters: true })
+        ),
+    });
+};
+
 const getProblems = async (req, res, next) => {
     let problems;
 
@@ -91,7 +124,7 @@ const createProblem = async (req, res, next) => {
 
     const {
         subjectContent,
-        course, 
+        course,
         subdomain,
         katex,
         katexEquation,
@@ -273,7 +306,7 @@ const deleteProblem = async (req, res, next) => {
     }
 
     let imagePath;
-    if(problem.image) {
+    if (problem.image) {
         imagePath = problem.image;
     }
 
@@ -292,7 +325,7 @@ const deleteProblem = async (req, res, next) => {
         return next(error);
     }
 
-    if(problem.image) {
+    if (problem.image) {
         fs.unlink(imagePath, (err) => {
             console.log(err);
         });
@@ -307,3 +340,4 @@ exports.getProblems = getProblems;
 exports.createProblem = createProblem;
 exports.updateProblem = updateProblem;
 exports.deleteProblem = deleteProblem;
+exports.getLastSixProblemsByUserId = getLastSixProblemsByUserId;
