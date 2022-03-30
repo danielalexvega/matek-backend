@@ -65,9 +65,7 @@ const getLastSixProblemsByUserId = async (req, res, next) => {
     let problems;
 
     try {
-        problems = await Problem.find({ authorId: userId })
-            .sort("-date")
-            .limit(6);
+        problems = await Problem.find({ authorId: userId });
     } catch (err) {
         const error = new HttpError(
             "Something went wrong, could not find a problem",
@@ -86,6 +84,8 @@ const getLastSixProblemsByUserId = async (req, res, next) => {
         return next(error);
     }
 
+    problems = problems.reverse();
+    problems = problems.slice(0, 6);
     res.json({
         problems: problems.map((problem) =>
             problem.toObject({ getters: true })
