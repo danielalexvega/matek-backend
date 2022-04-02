@@ -6,6 +6,17 @@ const HttpError = require("../models/http-error");
 const User = require("../models/user");
 const Problem = require("../models/problem");
 
+const shuffleArray = (array) => {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+
+    return array;
+};
+
 const getProblemById = async (req, res, next) => {
     const problemId = req.params.problemId;
     let problem;
@@ -180,7 +191,7 @@ const getVariableProblemSet = async (req, res, next) => {
         return next(error);
     }
 
-    problems = problems.reverse().shuffleArray();
+    problems = shuffleArray(problems.reverse());
     problems.splice(0, amount);
     res.json({
         problems: problems.map((problem) =>
@@ -463,16 +474,7 @@ const deleteProblem = async (req, res, next) => {
     res.status(200).json({ message: "Deleted a problem." });
 };
 
-const shuffleArray = (array) => {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        const temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
-    }
 
-    return array;
-};
 
 exports.getProblemById = getProblemById;
 exports.getProblemsByUserId = getProblemsByUserId;
