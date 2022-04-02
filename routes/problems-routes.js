@@ -9,6 +9,7 @@ const {
     updateProblem,
     deleteProblem,
     getLastSixProblemsByUserId,
+    getProblemsByCourse
 } = require("../controllers/problems-controller");
 const fileUpload = require("../middleware/file-upload");
 const checkAuth = require("../middleware/check-auth");
@@ -27,8 +28,12 @@ router.get("/user/lastSix/:userId", getLastSixProblemsByUserId);
 // get a single problem
 router.get("/:problemId", getProblemById);
 
+// get all problems from a course
+router.get("/problemsByCourse/:course", getProblemsByCourse);
+
 // clone a problem
 router.get("/:problemId/clone", getProblemById);
+
 
 router.use(checkAuth);
 

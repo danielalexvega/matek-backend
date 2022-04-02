@@ -60,6 +60,36 @@ const getProblemsByUserId = async (req, res, next) => {
     });
 };
 
+const getProblemsByCourse = async (req, res, next) => {
+    const course = req.params.course.replace(/-/g, " ");
+    let problems;
+
+    try {
+        problems = await Problem.find({ course: course });
+    } catch (err) {
+        const error = new HttpError(
+            "Something went wrong, could not find problems.",
+            500
+        );
+    }
+
+    if (!problems) {
+        const error = new HttpError(
+            "Could not find a problem for the provided user id.",
+            404
+        );
+
+        return next(error);
+    }
+
+    problems = problems.reverse();
+    res.json({
+        problems: problems.map((problem) =>
+            problem.toObject({ getters: true })
+        ),
+    });
+};
+
 const getLastSixProblemsByUserId = async (req, res, next) => {
     const userId = req.params.userId;
     let problems;
@@ -68,7 +98,7 @@ const getLastSixProblemsByUserId = async (req, res, next) => {
         problems = await Problem.find({ authorId: userId });
     } catch (err) {
         const error = new HttpError(
-            "Something went wrong, could not find a problem",
+            "Something went wrong, could not find a problem.",
             500
         );
 
@@ -341,3 +371,4 @@ exports.createProblem = createProblem;
 exports.updateProblem = updateProblem;
 exports.deleteProblem = deleteProblem;
 exports.getLastSixProblemsByUserId = getLastSixProblemsByUserId;
+exports.getProblemsByCourse = getProblemsByCourse;
