@@ -120,6 +120,75 @@ const getProblemsBySubjectContent = async (req, res, next) => {
     });
 };
 
+const getProblemsBySubdomain = async (req, res, next) => {
+    const subdomain = req.params.subdomain.replace(/-/g, " ");
+    let problems;
+
+    try {
+        problems = await Problem.find({ subdomain: subdomain });
+    } catch (err) {
+        const error = new HttpError(
+            "Something went wrong, could not find problems.",
+            500
+        );
+    }
+
+    if (!problems) {
+        const error = new HttpError(
+            "Could not find a problem for the provided subdomain.",
+            404
+        );
+
+        return next(error);
+    }
+
+    problems = problems.reverse();
+    res.json({
+        problems: problems.map((problem) =>
+            problem.toObject({ getters: true })
+        ),
+    });
+};
+
+const getVariableProblemSet = async (req, res, next) => {
+    const course = req.params.course.replace(/-/g, " ");
+    const subjectContent = req.params.subjectContent.replace(/-/g, " ");
+    const subdomain = req.params.subdomain.replace(/-/g, " ");
+    const amount = req.params.amount;
+
+    let problems;
+
+    try {
+        problems = await Problem.find({
+            course: course,
+            subjectContent: subjectContent,
+            subdomain: subdomain,
+        });
+    } catch (err) {
+        const error = new HttpError(
+            "Something went wrong, could not find problems.",
+            500
+        );
+    }
+
+    if (!problems) {
+        const error = new HttpError(
+            "Could not find a problem for the provided subdomain.",
+            404
+        );
+
+        return next(error);
+    }
+
+    problems = problems.reverse().shuffleArray();
+    problems.splice(0, amount);
+    res.json({
+        problems: problems.map((problem) =>
+            problem.toObject({ getters: true })
+        ),
+    });
+};
+
 const getLastSixProblemsByUserId = async (req, res, next) => {
     const userId = req.params.userId;
     let problems;
@@ -394,6 +463,17 @@ const deleteProblem = async (req, res, next) => {
     res.status(200).json({ message: "Deleted a problem." });
 };
 
+const shuffleArray = (array) => {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+
+    return array;
+};
+
 exports.getProblemById = getProblemById;
 exports.getProblemsByUserId = getProblemsByUserId;
 exports.getProblems = getProblems;
@@ -403,3 +483,5 @@ exports.deleteProblem = deleteProblem;
 exports.getLastSixProblemsByUserId = getLastSixProblemsByUserId;
 exports.getProblemsByCourse = getProblemsByCourse;
 exports.getProblemsBySubjectContent = getProblemsBySubjectContent;
+exports.getProblemsBySubdomain = getProblemsBySubdomain;
+exports.getVariableProblemSet = getVariableProblemSet;
