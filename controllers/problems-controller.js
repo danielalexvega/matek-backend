@@ -75,7 +75,37 @@ const getProblemsByCourse = async (req, res, next) => {
 
     if (!problems) {
         const error = new HttpError(
-            "Could not find a problem for the provided user id.",
+            "Could not find a problem for the provided course.",
+            404
+        );
+
+        return next(error);
+    }
+
+    problems = problems.reverse();
+    res.json({
+        problems: problems.map((problem) =>
+            problem.toObject({ getters: true })
+        ),
+    });
+};
+
+const getProblemsBySubjectContent = async (req, res, next) => {
+    const subjectContent = req.params.subjectContent.replace(/-/g, " ");
+    let problems;
+
+    try {
+        problems = await Problem.find({ subjectContent: subjectContent });
+    } catch (err) {
+        const error = new HttpError(
+            "Something went wrong, could not find problems.",
+            500
+        );
+    }
+
+    if (!problems) {
+        const error = new HttpError(
+            "Could not find a problem for the provided subject content.",
             404
         );
 
@@ -372,3 +402,4 @@ exports.updateProblem = updateProblem;
 exports.deleteProblem = deleteProblem;
 exports.getLastSixProblemsByUserId = getLastSixProblemsByUserId;
 exports.getProblemsByCourse = getProblemsByCourse;
+exports.getProblemsBySubjectContent = getProblemsBySubjectContent;
